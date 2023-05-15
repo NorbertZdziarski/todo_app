@@ -37,6 +37,16 @@ async function handleSubmit(event){
     setDescription('')
     setTasks([...tasks, result])
 }
+    async function deleteTaskAPI(id) {
+      const response = await fetch(`http://localhost:3000/tasks/${id}`, {method: 'DELETE'})
+        return response.json();
+    }
+
+    async function handleDeleteTask(event) {
+      const id = +event.target.dataset.id
+        await deleteTaskAPI(id);
+        setTasks(tasks.filter((task) => task.id !== id))
+    }
 
 
   return (
@@ -72,7 +82,7 @@ async function handleSubmit(event){
                   <b>{task.title}</b> - <span>{task.description}</span>
                   <button>Add operation</button>
                   <button>Finish</button>
-                  <button>Delete</button>
+                  <button onClick={handleDeleteTask} data-id={task.id}>Delete</button>
               </div>
           ) )}
 
