@@ -1,6 +1,6 @@
 import './App.css'
 import React, {useEffect, useState} from "react";
-import {deleteTaskAPI, getDataAPI, sendDataAPI} from "./assets/helpers/api.js";
+import {deleteDataAPI, getDataAPI, sendDataAPI} from "./assets/helpers/api.js";
 import AddOperation from "./components/AddOperation.jsx";
 
 function App() {
@@ -39,10 +39,19 @@ async function handleSubmit(event){
 
     async function handleDeleteTask(event) {
       const id = +event.target.dataset.id
-        await deleteTaskAPI(id);
+        await deleteDataAPI(id, 'tasks');
         setTasks(tasks.filter((task) => task.id !== id))
     }
 
+    async function handleDeleteOperation(id) {
+        await deleteDataAPI(id, 'operations')
+        setTasks(tasks.map((task)=> {
+            return {
+                ...task,
+                operations: task.operations.filter((operation)=> operation.id !== id)
+            }
+        }))
+    }
 
   return (
     <>
@@ -89,6 +98,11 @@ async function handleSubmit(event){
                       {task.operations && task.operations.map((operation)=> (
                           <div key={operation.id}>
                             <span>{operation.description}: </span><b>{operation.timeSpent}</b>
+                            <button
+                                onClick={() => handleDeleteOperation(operation.id)}
+                              >Delete
+                            </button>
+
                           </div>
                       ) )}
                   </div>
