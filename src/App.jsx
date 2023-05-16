@@ -1,46 +1,41 @@
 import './App.css'
-import {useEffect, useState} from "react";
-import {getAllTasks} from "./assets/helpers/api.js";
+import React, {useEffect, useState} from "react";
+import {deleteTaskAPI, getDataAPI, sendDataAPI} from "./assets/helpers/api.js";
+import AddOperation from "./components/AddOperation.jsx";
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [operationId, setOperationId] = useState(null);
 
   useEffect(()=> {
-    getAllTasks().then((data)=>{
-      setTasks(data)
-    })
-        .catch(console.error)
+     const data = Promise.all([getDataAPI('tasks'), getDataAPI('operations')])
+
+        data
+            .then((results) => {
+            const [taskData, operationsData] = results;
+            const tasks = taskData.map((task) => ({
+                    ...task,
+                operations: operationsData.filter((operation) => operation.taskId === task.id)
+            }))
+            setTasks(tasks)
+        } )
+            .catch(console.error)
   },[])
 
 
-  async function sendTaskData(data) {
-    const response = await fetch(
-        'http://localhost:3000/tasks',
-        {
-          headers: {
-            'Content-Type': 'application/json'},
-          method: 'POST',
-          body: JSON.stringify(data)
-          }
-    )
-    return response.json()
-  }
+
 
 async function handleSubmit(event){
     event.preventDefault()
-    const result = await sendTaskData({
+    const result = await sendDataAPI({
       title, description, status: "open", addedDate: new Date()
-    })
+    }, 'tasks')
     setTitle('');
     setDescription('')
     setTasks([...tasks, result])
 }
-    async function deleteTaskAPI(id) {
-      const response = await fetch(`http://localhost:3000/tasks/${id}`, {method: 'DELETE'})
-        return response.json();
-    }
 
     async function handleDeleteTask(event) {
       const id = +event.target.dataset.id
@@ -80,14 +75,26 @@ async function handleSubmit(event){
           {tasks.map((task) => (
               <div key={task.id}>
                   <b>{task.title}</b> - <span>{task.description}</span>
-                  <button>Add operation</button>
+                  {operationId === task.id ? (
+                      <AddOperation
+                                  taskId = {task.id}
+                                  setOperationId = {setOperationId}
+                                  setTasks = {setTasks}
+                              />) : (
+                      <button onClick={()=> setOperationId(task.id)}>Add operation</button>)}
+
                   <button>Finish</button>
                   <button onClick={handleDeleteTask} data-id={task.id}>Delete</button>
+                  <div>
+                      {task.operations && task.operations.map((operation)=> (
+                          <div key={operation.id}>
+                            <span>{operation.description}: </span><b>{operation.timeSpent}</b>
+                          </div>
+                      ) )}
+                  </div>
               </div>
           ) )}
-
       </section>
-
 
     </>
   )
