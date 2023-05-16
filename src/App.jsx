@@ -1,13 +1,15 @@
 import './App.css'
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {deleteDataAPI, getDataAPI, sendDataAPI} from "./assets/helpers/api.js";
 import AddOperation from "./components/AddOperation.jsx";
+import AddTimeSpent from "./components/AddTimeSpent.jsx";
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [operationId, setOperationId] = useState(null);
+  const [timeSpentId, setTimeSpentId] = useState(null);
 
   useEffect(()=> {
      const data = Promise.all([getDataAPI('tasks'), getDataAPI('operations')])
@@ -97,11 +99,23 @@ async function handleSubmit(event){
                   <div>
                       {task.operations && task.operations.map((operation)=> (
                           <div key={operation.id}>
-                            <span>{operation.description}: </span><b>{operation.timeSpent}</b>
-                            <button
-                                onClick={() => handleDeleteOperation(operation.id)}
-                              >Delete
-                            </button>
+
+                                <span>{operation.description}: </span><b>{~~(operation.timeSpent/60)}h {operation.timeSpent % 60}min</b>
+
+                              {operation.id === timeSpentId ? (
+                                  <AddTimeSpent
+                                        operationId = {operation.id}
+                                        spentTime = {operation.timeSpent}
+                                        setTasks = {setTasks}
+                                        setTimeSpentId = {setTimeSpentId}
+                                  />
+                              ) : (
+                                  <button onClick={()=> setTimeSpentId(operation.id)}>Add Spent Time</button>
+                              )}
+                                <button
+                                    onClick={() => handleDeleteOperation(operation.id)}
+                                  >Delete
+                                </button>
 
                           </div>
                       ) )}
