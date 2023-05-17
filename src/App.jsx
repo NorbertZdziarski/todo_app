@@ -1,33 +1,101 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import React, {useEffect, useState} from "react";
+import {deleteTaskAPI, getDataAPI, sendDataAPI} from "./assets/helpers/api.js";
+import AddOperation from "./components/AddOperation.jsx";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tasks, setTasks] = useState([]);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [operationId, setOperationId] = useState(null);
+
+  useEffect(()=> {
+     const data = Promise.all([getDataAPI('tasks'), getDataAPI('operations')])
+
+        data
+            .then((results) => {
+            const [taskData, operationsData] = results;
+            const tasks = taskData.map((task) => ({
+                    ...task,
+                operations: operationsData.filter((operation) => operation.taskId === task.id)
+            }))
+            setTasks(tasks)
+        } )
+            .catch(console.error)
+  },[])
+
+
+
+
+async function handleSubmit(event){
+    event.preventDefault()
+    const result = await sendDataAPI({
+      title, description, status: "open", addedDate: new Date()
+    }, 'tasks')
+    setTitle('');
+    setDescription('')
+    setTasks([...tasks, result])
+}
+
+    async function handleDeleteTask(event) {
+      const id = +event.target.dataset.id
+        await deleteTaskAPI(id);
+        setTasks(tasks.filter((task) => task.id !== id))
+    }
+
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+
+      <form
+        onSubmit={handleSubmit}>
+        <div>
+          <label htmlFor="title">Title</label>
+          <input
+              value={title}
+              type="text"
+              id="title"
+              name="title"
+              onChange={(event) => setTitle(event.target.value)}
+              />
+        </div>
+        <div>
+          <label htmlFor="desc">Description</label>
+          <textarea
+              value={description}
+              id="desc"
+              name="desc"
+              onChange={(event) => setDescription(event.target.value)}
+              />
+        </div>
+        <button type="submit">Add</button>
+      </form>
+        <br/>
+      <section>
+          {tasks.map((task) => (
+              <div key={task.id}>
+                  <b>{task.title}</b> - <span>{task.description}</span>
+                  {operationId === task.id ? (
+                      <AddOperation
+                                  taskId = {task.id}
+                                  setOperationId = {setOperationId}
+                                  setTasks = {setTasks}
+                              />) : (
+                      <button onClick={()=> setOperationId(task.id)}>Add operation</button>)}
+
+                  <button>Finish</button>
+                  <button onClick={handleDeleteTask} data-id={task.id}>Delete</button>
+                  <div>
+                      {task.operations && task.operations.map((operation)=> (
+                          <div key={operation.id}>
+                            <span>{operation.description}: </span><b>{operation.timeSpent}</b>
+                          </div>
+                      ) )}
+                  </div>
+              </div>
+          ) )}
+      </section>
+
     </>
   )
 }
