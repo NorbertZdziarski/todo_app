@@ -91,6 +91,7 @@ function App() {
 
   return (
     <>
+      <h2 className="header">What to do?</h2>
       <div className="main-box-div">
         <header className="header-box">
           <form onSubmit={handleSubmit}>
