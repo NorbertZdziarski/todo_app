@@ -40,3 +40,77 @@
 .read-the-docs {
   color: #888;
 }
+
+.main-box-div {
+  width: 70vw;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.74);
+  border: 1px solid gray;
+  border-radius: 10px;
+
+}
+
+.header-box {
+  width: 600px;
+  padding: 10px;
+  border-bottom: 1px solid rgba(61, 61, 61, 0.88);
+  margin-inline: auto;
+  margin-bottom: 1px;
+}
+
+.input_div {
+  width: 600px;
+  display: flex;
+  justify-content: right;
+}
+
+.header_input {
+
+  width: 500px;
+  background-color: white;
+  height: 20px;
+  padding: 2px;
+  margin: 3px;
+}
+.content-box {
+  width: 600px;
+  padding: 10px;
+  margin-inline: auto;
+  margin-bottom: 1px;
+}
+.task-style {
+  margin-top: 5px;
+  background-color: rgba(232, 232, 232, 0.28);
+  padding-left: 5px;
+  border: 1px dashed black;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 600px;
+}
+
+.task-title-style {
+  width: auto;
+}
+.subtask-style {
+  background-color: rgba(232, 232, 232, 0.28);
+  padding-left: 5px;
+  border-left: 1px dashed black;
+  border-right: 1px dashed black;
+  border-bottom: 1px dashed black;
+  border-radius: 0 0 5px 5px;
+
+  width: 580px;
+  margin-left: 20px;
+}
+
+.one_subtask-style {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 99%;
+  border-top: 1px solid rgba(26, 26, 26, 0.33);
+  padding-top: 2px;
+  margin-bottom: 2px;
+}
