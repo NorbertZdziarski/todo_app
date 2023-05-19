@@ -1,4 +1,4 @@
-import "./App.css";
+import "./App.scss";
 import { useEffect, useState } from "react";
 import {
   deleteDataAPI,
@@ -90,7 +90,7 @@ function App() {
   }
 
   return (
-    <>
+    <div>
       <h2 className="header">What to do?</h2>
       <div className="main-box-div">
         <header className="header-box">
@@ -198,7 +198,7 @@ function App() {
           ))}
         </section>
       </div>
-    </>
+    </div>
   );
 }
 
